@@ -1,17 +1,40 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import logo from "./logo.svg";
 import "./App.css";
+import axios from "axios";
+import { Post, PostsResponse, User } from "./interface";
 
 function App() {
-  const [text, setText] = useState("");
-  const data = fetch("http://localhost:3000").then((x) => {
-    x.text().then((v) => {
-      setText(v);
-      console.log(v);
-    });
+  //State
+  const [user, setUser] = useState<User>();
+  const [posts, setPosts] = useState<Post[]>([]);
+
+  //Effects
+  useEffect(() => {
+    if (!user) {
+      axios
+        .get("http://localhost:3000/user")
+        .then((x) => {
+          setUser(x.data);
+        })
+        .catch((x) => {
+          console.log(x);
+        });
+    }
   });
 
-  console.log(data);
+  useEffect(() => {
+    if (!!user?.userId && posts?.length === 0) {
+      axios
+        .get<PostsResponse>(`http://localhost:3000/user/${user.userId}/posts`)
+        .then((x) => {
+          setPosts(x.data.posts);
+        })
+        .catch((x) => {
+          console.log(x);
+        });
+    }
+  });
 
   return (
     <div className="App">
@@ -28,7 +51,14 @@ function App() {
         >
           Learn React
         </a>
-        {text}
+        {user?.name}
+        <br />
+        {posts.map((post) => (
+          <>
+            {post.title}
+            <br />
+          </>
+        ))}
       </header>
     </div>
   );
