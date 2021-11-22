@@ -1,8 +1,25 @@
 import express, { Request, Response } from "express";
 import cors from "cors";
+import { ApolloServer, gql } from "apollo-server";
 
 const app = express();
 const port = 3000;
+
+const typeDefs = gql`
+  type User {
+    name: string
+    email: string
+    phone: string
+    avatar: string
+    userId: string
+  }
+
+  type Posts {
+    title: string
+    description: string
+    time: string
+  }
+`;
 
 app.use(cors());
 
